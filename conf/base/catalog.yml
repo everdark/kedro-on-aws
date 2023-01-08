@@ -20,6 +20,6 @@ transactions:
     <<: *athena
     query: |
       SELECT *, year(cast(date as timestamp)) as year, month(cast(date as timestamp)) as month
-      FROM ${database_name}.transactions
+      FROM "${database_name}".transactions
       LIMIT 100
     partition_cols: ["year", "month"]
