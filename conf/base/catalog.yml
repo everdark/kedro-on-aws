@@ -1,0 +1,25 @@
+_athena: &athena
+    type: iris.extras.datasets.athena_dataset.AthenaQueryDataSet
+    region: ${region}
+    database: ${database_name}
+    bucket: ${bucket_name}
+    athena_path: ${athena_output_prefix}
+
+
+# _parquet_spark: &parquet
+#     type: spark.SparkDataSet
+#     file_format: parquet
+#     load_args:
+#       header: True
+#       inferSchema: True
+#     save_args:
+#       sep: '|'
+#       header: True
+
+transactions:
+    <<: *athena
+    query: |
+      SELECT *, year(cast(date as timestamp)) as year, month(cast(date as timestamp)) as month
+      FROM ${database_name}.transactions
+      LIMIT 100
+    partition_cols: ["year", "month"]

@@ -1,0 +1,107 @@
+[
+    {
+        "Name": "date",
+        "Type": "string",
+        "Comment": "Partition column (YYYY-MM-DD)"
+    },
+    {
+        "Name": "hash",
+        "Type": "string",
+        "Comment": "Hash of the transaction"
+    },
+    {
+        "Name": "nonce",
+        "Type": "bigint",
+        "Comment": "The number of transactions made by the sender prior to this one"
+    },
+    {
+        "Name": "transaction_index",
+        "Type": "bigint",
+        "Comment": "Integer of the transactions index position in the block"
+    },
+    {
+        "Name": "from_address",
+        "Type": "string",
+        "Comment": "Address of the sender"
+    },
+    {
+        "Name": "to_address",
+        "Type": "string",
+        "Comment": "Address of the receiver"
+    },
+    {
+        "Name": "value",
+        "Type": "double",
+        "Comment": "Value transferred in wei"
+    },
+    {
+        "Name": "gas",
+        "Type": "bigint",
+        "Comment": "Gas price provided by the sender in wei"
+    },
+    {
+        "Name": "gas_price",
+        "Type": "bigint",
+        "Comment": "Gas provided by the sender"
+    },
+    {
+        "Name": "input",
+        "Type": "string",
+        "Comment": "The data sent along with the transaction"
+    },
+    {
+        "Name": "receipt_cumulative_gas_used",
+        "Type": "bigint",
+        "Comment": "The total amount of gas used when this transaction was executed in the block"
+    },
+    {
+        "Name": "receipt_gas_used",
+        "Type": "bigint",
+        "Comment": "The amount of gas used by this specific transaction alone"
+    },
+    {
+        "Name": "receipt_contract_address",
+        "Type": "string",
+        "Comment": "The contract address created, if the transaction was a contract creation"
+    },
+    {
+        "Name": "receipt_status",
+        "Type": "bigint",
+        "Comment": "If the transaction was successful"
+    },
+    {
+        "Name": "block_timestamp",
+        "Type": "timestamp",
+        "Comment": "The unix timestamp for when the block was collated"
+    },
+    {
+        "Name": "block_number",
+        "Type": "bigint",
+        "Comment": "Block number where this transaction was in"
+    },
+    {
+        "Name": "block_hash",
+        "Type": "string",
+        "Comment": "Hash of the block"
+    },
+    {
+        "Name": "max_fee_per_gas",
+        "Type": "bigint",
+        "Comment": "Total fee that covers both base and priority fees"
+    },
+    {
+        "Name": "max_priority_fee_per_gas",
+        "Type": "bigint",
+        "Comment": "Fee given to miners to incentivize them to include the transaction"
+    },
+    {
+        "Name": "transaction_type",
+        "Type": "bigint",
+        "Comment": "Transaction type"
+    },
+    {
+        "Name": "receipt_effective_gas_price",
+        "Type": "bigint",
+        "Comment": "The actual value per gas deducted from the senders account."
+    }
+]

@@ -1,0 +1,4 @@
+region: ap-southeast-1
+bucket_name: k9-eth
+athena_output_prefix: athena-output/
+database_name: eth
