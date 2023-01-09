@@ -1,4 +1,5 @@
 __pycache__
+conf/local
 logs/*
 !logs/placeholder
 .ipynb_checkpoints
