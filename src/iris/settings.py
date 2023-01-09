@@ -2,9 +2,11 @@
 from the Kedro defaults. For further information, including these default values, see
 https://kedro.readthedocs.io/en/stable/kedro_project_setup/settings.html."""
 
-# Instantiated project hooks.
+from kedro.config import TemplatedConfigLoader
+
 from iris.hooks import SparkHooks
 
+# Instantiated project hooks.
 HOOKS = (SparkHooks(),)
 
 # Installed plugins for which to disable hook auto-registration.
@@ -26,8 +28,6 @@ HOOKS = (SparkHooks(),)
 # CONF_SOURCE = "conf"
 
 # Class that manages how configuration is loaded.
-from kedro.config import TemplatedConfigLoader
-
 CONFIG_LOADER_CLASS = TemplatedConfigLoader
 # Keyword arguments to pass to the `CONFIG_LOADER_CLASS` constructor.
 CONFIG_LOADER_ARGS = {

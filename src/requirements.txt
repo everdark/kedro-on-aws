@@ -14,3 +14,4 @@ pytest-mock>=1.7.1, <2.0
 pytest~=6.2
 boto3~=1.24
 pyspark~=3.3
+bandit~=1.7
