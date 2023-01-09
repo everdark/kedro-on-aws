@@ -5,16 +5,16 @@ _athena: &athena
   bucket: ${bucket_name}
   athena_path: ${athena_output_prefix}
 
-
 _parquet_spark: &parquet
   type: spark.SparkDataSet
   file_format: parquet
-  load_args:
+  load_args: &parquet_load_args
     header: True
     inferSchema: True
-  save_args:
+  save_args: &parquet_save_args
     sep: '|'
     header: True
+    mode: overwrite
 
 transactions:
   <<: *athena
@@ -22,8 +22,11 @@ transactions:
     SELECT *, year(cast(date as timestamp)) as year, month(cast(date as timestamp)) as month
     FROM "${database_name}".transactions
     LIMIT 100
-  partition_cols: ["year", "month"]
+  partition_cols: [year, month]
 
 parsed:
   <<: *parquet
   filepath: s3a://${bucket_name}/parsed/
+  save_args:
+    <<: *parquet_save_args
+    partitionBy: [year, month]
