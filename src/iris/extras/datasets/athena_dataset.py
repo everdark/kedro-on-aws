@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 import uuid
 from typing import Any, Dict, List, NoReturn
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 class AthenaQueryDataSet(AbstractDataSet[None, DataFrame]):
     """Custom dataset powered by Athena.
 
-    It loads data from a provided Athena CTAS query with partitioning columns.
+    It loads data from a provided Athena CTAS/UNLOAD query with partitioning columns.
     The resulting parquet outputs are written to S3 and read back by spark as dataframe,
 
     It does not support save method so it is a read only data set.
@@ -27,6 +28,7 @@ class AthenaQueryDataSet(AbstractDataSet[None, DataFrame]):
         athena_path: str,
         query: str,
         partition_cols: List[str],
+        unload: bool = True,
     ) -> None:
         """Creates a new instance of AthenaQueryDataSet.
 
@@ -37,21 +39,30 @@ class AthenaQueryDataSet(AbstractDataSet[None, DataFrame]):
             athena_path: S3 prefix to save Athena outputs.
             query: The query that we would like to run and get output from.
             partition_cols: List of column names for output partitioning.
+            unload: Use UNLOAD instead of CTAS query?
+
         """
+        self._name = self._random_name()
         self._region = region
         self._database = database
         self._bucket = bucket
         self._athena_path = athena_path
         self._query = query
         self._partition_cols = partition_cols
+        self._unload = unload
+        # output location is used for storing athena query metadata regardless of
+        # whether the query is CTAS or UNLOAD
+        # in the case of CTAS, it is also used to save the output files
         self._output_location = f"s3://{self._bucket}/{self._athena_path}"
+        # if unload is true, the output files are located instead by the unload location
+        self._unload_location = os.path.join(self._output_location, self._name)
 
     @staticmethod
-    def _random_table_name(prefix: str = "temp_tbl_", n_char: int = 10) -> str:
-        """Generate random string for table naming.
+    def _random_name(prefix: str = "temp_tbl_", n_char: int = 10) -> str:
+        """Generate random string for destination table/path naming.
 
         Args:
-            prefix: Prefix for the resulting table name.
+            prefix: Prefix for the resulting name.
             n_char: Number of characters used from UUID4.
 
         Returns:
@@ -61,26 +72,38 @@ class AthenaQueryDataSet(AbstractDataSet[None, DataFrame]):
         return prefix + uuid.uuid4().hex[:n_char]
 
     def athena_query(self, client) -> Dict:
-        """Create an Athena CTAS query and execute it async."""
-        tbl_name = self._random_table_name()
-        ctas_query = f"""
-        CREATE TABLE {tbl_name}
-        WITH (
-            format = 'PARQUET',
-            partitioned_by = ARRAY{str(self._partition_cols)}
-        )
-        AS
+        """Create an Athena CTAS/UNLOAD query and execute it async."""
+        with_clause = f"""
+            WITH (
+                format = 'PARQUET',
+                partitioned_by = ARRAY{str(self._partition_cols)}
+            )
         """
-        final_query = ctas_query + self._query
+        if self._unload:
+            final_query = f"""
+            UNLOAD (
+                {self._query}
+            )
+            TO '{self._unload_location}'
+            {with_clause}
+            """
+            mesg = f"Attempt to UNLOAD files to {self._unload_location} with Athena."
+        else:
+            final_query = f"""
+            CREATE TABLE {self._name}
+            {with_clause}
+            AS
+            {self._query}
+            """
+            mesg = f"Attempt to create external table {self._name} with Athena CTAS."
 
         response = client.start_query_execution(
             QueryString=final_query,
             QueryExecutionContext={"Database": self._database},
             ResultConfiguration={"OutputLocation": self._output_location},
         )
-        logger.info(
-            f"Attempt to create external table {tbl_name} with Athena CTAS query."
-        )
+        logger.info(mesg)
+
         return response
 
     def athena_to_s3(self) -> str:
@@ -105,9 +128,12 @@ class AthenaQueryDataSet(AbstractDataSet[None, DataFrame]):
                         response["QueryExecution"]["Status"]["StateChangeReason"]
                     )
                 elif state == "SUCCEEDED":
-                    s3_path = response["QueryExecution"]["ResultConfiguration"][
-                        "OutputLocation"
-                    ]
+                    if self._unload:
+                        s3_path = self._unload_location
+                    else:
+                        s3_path = response["QueryExecution"]["ResultConfiguration"][
+                            "OutputLocation"
+                        ]
                     logger.info(f"Athena query output files saved to: {s3_path}")
                     return s3_path.replace("s3://", "s3a://")
 
