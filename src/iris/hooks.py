@@ -17,6 +17,7 @@ class SparkHooks:
         # Initialise the spark session
         spark_session_conf = (
             SparkSession.builder.appName(context._package_name)
+            .master("local[2]")  # minimum parallelism
             .enableHiveSupport()
             .config(conf=spark_conf)
         )
