@@ -22,4 +22,4 @@ def read_raw_data(data: DataFrame, parameters: Dict):
         ...
 
     """
-    pass
+    return data

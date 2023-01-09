@@ -1,5 +1,13 @@
 # kedro-on-aws
 
+## Experiments
+
+- Using a custom kedro dataset with Athena query
+
+In case the raw data is challenging to parse (e.g., unfriendly partitioned),
+we can introduce an Athena query layer to serve as the actual entrypoint to the raw data.
+We can use CTAS or UNLOAD queries to make sure the resulting files are properly partitioned for the downstream pipeline.
+
 ## Data
 
 - [AWS Public Blockchain Data](https://aws.amazon.com/marketplace/pp/prodview-xv4ehzlgtim5a)
