@@ -8,15 +8,15 @@ from typing import Dict
 
 from pyspark.sql import DataFrame
 
-from config_loader import parameters
-from utils import repartition_by
+from .config_loader import parameters
+from .utils import repartition_by
 
 logger = logging.getLogger(__name__)
-_partition_cols = parameters["partition"]["parsed"]
+_partition_cols = parameters["partitions"]["parsed"]
 
 
 @repartition_by(_partition_cols)
-def read_raw_data(data: DataFrame) -> DataFrame:
+def read_raw_data(data: DataFrame, parameters: Dict) -> DataFrame:
     """Splits data into features and targets training and test sets.
 
     Args:
@@ -27,4 +27,5 @@ def read_raw_data(data: DataFrame) -> DataFrame:
         A pyspark dataframe.
 
     """
+    logger.info(f"parameters read as: {parameters}")
     return data

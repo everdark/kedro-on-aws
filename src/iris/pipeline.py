@@ -15,7 +15,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 func=read_raw_data,
                 inputs=["transactions", "parameters"],
                 outputs="parsed",
-                name="parse_raw",
+                name="parse_transactions",
             ),
         ]
     )
