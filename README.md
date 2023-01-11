@@ -8,6 +8,15 @@ In case the raw data is challenging to parse (e.g., unfriendly partitioned),
 we can introduce an Athena query layer to serve as the actual entrypoint to the raw data.
 We can use CTAS or UNLOAD queries to make sure the resulting files are properly partitioned for the downstream pipeline.
 
+- PySpark DataFrame partitioning with `globals` configuration and repartition decorator
+
+All resulting datasets are pyspark dataframe.
+We'd like to persist them as partitioned parquet files on S3.
+We use `globals` as the single source of truth for partitioning scheme,
+with the help of yaml templating to configure the built-in kedro `SparkDataSet`.
+
+We also use a repartition decorator to control how data are distributed across partitions.
+
 ## Data
 
 - [AWS Public Blockchain Data](https://aws.amazon.com/marketplace/pp/prodview-xv4ehzlgtim5a)
