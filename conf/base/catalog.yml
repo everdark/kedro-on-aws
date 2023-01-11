@@ -29,4 +29,4 @@ parsed:
   filepath: s3a://${bucket_name}/parsed/
   save_args:
     <<: *parquet_save_args
-    partitionBy: [year, month]
+    partitionBy: ${partitions.parsed}
