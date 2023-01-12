@@ -15,13 +15,14 @@ _parquet_spark: &parquet
     sep: '|'
     header: True
     mode: overwrite
+    maxRecordsPerFile: 10000
 
 transactions:
   <<: *athena
   query: |
     SELECT *, year(cast(date as timestamp)) as year, month(cast(date as timestamp)) as month
     FROM "${database_name}".transactions
-    LIMIT 100
+    LIMIT 50000
   partition_cols: [year, month]
 
 parsed:
