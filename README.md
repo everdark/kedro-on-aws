@@ -17,6 +17,10 @@ with the help of yaml templating to configure the built-in kedro `SparkDataSet`.
 
 We also use a repartition decorator to control how data are distributed across partitions.
 
+- Hooking `globals`
+
+Change `globals` programmatically to achieve dynamic `filepath` in dataset I/O.
+
 ## Data
 
 - [AWS Public Blockchain Data](https://aws.amazon.com/marketplace/pp/prodview-xv4ehzlgtim5a)

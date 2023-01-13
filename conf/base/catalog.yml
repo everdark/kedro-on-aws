@@ -15,19 +15,19 @@ _parquet_spark: &parquet
     sep: '|'
     header: True
     mode: overwrite
-    maxRecordsPerFile: 10000
+    maxRecordsPerFile: 1000
 
 transactions:
   <<: *athena
   query: |
     SELECT *, year(cast(date as timestamp)) as year, month(cast(date as timestamp)) as month
     FROM "${database_name}".transactions
-    LIMIT 50000
+    LIMIT 5000
   partition_cols: [year, month]
 
 parsed:
   <<: *parquet
-  filepath: s3a://${bucket_name}/parsed/
+  filepath: s3a://${bucket_name}/${nightly_prefix}/parsed/
   save_args:
     <<: *parquet_save_args
     partitionBy: ${partitions.parsed}

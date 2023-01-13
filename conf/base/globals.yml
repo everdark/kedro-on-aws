@@ -2,6 +2,7 @@ region: ap-southeast-1
 bucket_name: k9-kedro-on-aws
 athena_output_prefix: athena-query-outputs/
 database_name: kedro-on-aws
+nightly_prefix: default  # actual value will be set by settings.py
 
 partitions:
   parsed: [year, month]

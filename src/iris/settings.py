@@ -5,6 +5,7 @@ https://kedro.readthedocs.io/en/stable/kedro_project_setup/settings.html."""
 from kedro.config import TemplatedConfigLoader
 
 from iris.hooks import SparkHooks
+from iris.utils import yesterday
 
 # Instantiated project hooks.
 HOOKS = (SparkHooks(),)
@@ -27,11 +28,16 @@ HOOKS = (SparkHooks(),)
 # Directory that holds configuration.
 # CONF_SOURCE = "conf"
 
-# Class that manages how configuration is loaded.
+
+# Globals.
+nightly_prefix = yesterday().isoformat()
+
 CONFIG_LOADER_CLASS = TemplatedConfigLoader
-# Keyword arguments to pass to the `CONFIG_LOADER_CLASS` constructor.
 CONFIG_LOADER_ARGS = {
     "globals_pattern": "*globals.yml",
+    "globals_dict": {
+        "nightly_prefix": nightly_prefix,
+    },
 }
 
 # Class that manages the Data Catalog.
