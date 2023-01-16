@@ -31,3 +31,11 @@ parsed:
   save_args:
     <<: *parquet_save_args
     partitionBy: ${partitions.parsed}
+
+dummy:
+  type: pandas.CSVDataSet
+  filepath: data/iris.csv
+
+dummy_out:
+  type: pandas.CSVDataSet
+  filepath: data/iris-out.csv

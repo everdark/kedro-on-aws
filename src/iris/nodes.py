@@ -9,6 +9,7 @@ from typing import Dict
 from pyspark.sql import DataFrame
 
 from .config_loader import parameters
+from .hooks import test_hook_var
 from .utils import repartition_by
 
 logger = logging.getLogger(__name__)
@@ -28,4 +29,12 @@ def read_raw_data(data: DataFrame, parameters: Dict) -> DataFrame:
 
     """
     logger.info(f"parameters read as: {parameters}")
+    logger.info(f"globals in hook: {test_hook_var}")
+    return data
+
+
+def dummy(data: DataFrame, parameters: Dict) -> DataFrame:
+    logger.info("running a dummy node")
+    logger.info(f"parameters read as: {parameters}")
+    logger.info(f"globals in hook: {test_hook_var}")
     return data
