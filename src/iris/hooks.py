@@ -1,7 +1,8 @@
 import logging
-from typing import Dict
+from typing import Any, Dict
 
 from kedro.framework.hooks import hook_impl
+from kedro.io import DataCatalog
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
 
@@ -13,10 +14,24 @@ class ContextHooks:
     @hook_impl
     def after_context_created(self, context) -> None:
         """Update global variables from params to be accessible outside nodes."""
-        logger.info(f"params read by context hook: {context.params}")
+        logger.info(f"[context hook] params read: {context.params}")
 
         global PARTITION_SCHEME
         PARTITION_SCHEME = context.params["partitions"]
+
+
+class CatalogHooks:
+    @hook_impl
+    def after_catalog_created(
+        self,
+        catalog: DataCatalog,
+        conf_catalog: Dict[str, Any],
+        conf_creds: Dict[str, Any],
+        save_version: str,
+        load_versions: Dict[str, str],
+    ) -> None:
+        """Dummy hook on catalog."""
+        logger.info(f"[catalog hook] conf read: {conf_catalog}")
 
 
 class SparkHooks:

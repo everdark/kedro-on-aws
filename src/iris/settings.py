@@ -3,12 +3,13 @@ from the Kedro defaults. For further information, including these default values
 https://kedro.readthedocs.io/en/stable/kedro_project_setup/settings.html."""
 from kedro.config import TemplatedConfigLoader
 
-from iris.hooks import ContextHooks, SparkHooks
+from iris.hooks import CatalogHooks, ContextHooks, SparkHooks
 from iris.utils import yesterday
 
 # Instantiated project hooks.
 HOOKS = (
     ContextHooks(),
+    CatalogHooks(),
     SparkHooks(),
 )
 

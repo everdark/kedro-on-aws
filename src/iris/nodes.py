@@ -8,7 +8,7 @@ from .config_loader import parameters
 from .utils import repartition_by
 
 logger = logging.getLogger(__name__)
-logger.info(f"check hooked var: {hooks.PARTITION_SCHEME}")  # not updated yet
+logger.info(f"check var update from hook: {hooks.PARTITION_SCHEME}")  # not updated yet
 _partition_cols = parameters["partitions"]["parsed"]
 
 
@@ -28,7 +28,9 @@ def read_raw_data(data: DataFrame, parameters: Dict) -> DataFrame:
 
 
 def dummy(data: DataFrame, parameters: Dict) -> DataFrame:
-    logger.info("running a dummy node")
-    logger.info(f"parameters read in a node as: {parameters}")
-    logger.info(f"globals in a node updated by hook: {hooks.PARTITION_SCHEME}")  # now updated
+    logger.info("[node] running a dummy node")
+    logger.info(f"[node] parameters read in a node as: {parameters}")
+    logger.info(
+        f"[node] globals updated by hook: {hooks.PARTITION_SCHEME}"
+    )  # now updated
     return data
