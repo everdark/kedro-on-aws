@@ -143,6 +143,8 @@ class AthenaQueryDataSet(AbstractDataSet[None, DataFrame]):
 
     def read_output_from_s3(self, s3a_path) -> DataFrame:
         spark = self._get_spark()
+        logger.info("spark conf in use:")
+        logger.info(spark.sparkContext.getConf().getAll())
         df = spark.read.parquet(s3a_path)
         return df
 
