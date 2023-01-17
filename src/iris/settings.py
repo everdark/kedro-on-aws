@@ -1,14 +1,16 @@
 """Project settings. There is no need to edit this file unless you want to change values
 from the Kedro defaults. For further information, including these default values, see
 https://kedro.readthedocs.io/en/stable/kedro_project_setup/settings.html."""
-
 from kedro.config import TemplatedConfigLoader
 
-from iris.hooks import SparkHooks
+from iris.hooks import ContextHooks, SparkHooks
 from iris.utils import yesterday
 
 # Instantiated project hooks.
-HOOKS = (SparkHooks(),)
+HOOKS = (
+    ContextHooks(),
+    SparkHooks(),
+)
 
 # Installed plugins for which to disable hook auto-registration.
 # DISABLE_HOOKS_FOR_PLUGINS = ("kedro-viz",)

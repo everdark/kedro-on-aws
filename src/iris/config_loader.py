@@ -1,6 +1,6 @@
 """Read kedro config outside the session context.
 
-This is to workaround the need to access globals/parameters outside nodes/pipelines api.
+This is to workaround the need to access globals/parameters outside nodes.
 """
 import os
 from pathlib import Path
@@ -8,6 +8,7 @@ from pathlib import Path
 from kedro.config import TemplatedConfigLoader
 from kedro.framework.project import settings
 
+# FIXME: how do we replace this module with a potential hook?
 _module_dir = Path(os.path.dirname(__file__)).absolute()
 _conf_dir = str(_module_dir.parent.parent / settings.CONF_SOURCE)
 _conf_loader = TemplatedConfigLoader(

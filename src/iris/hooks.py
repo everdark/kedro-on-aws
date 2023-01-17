@@ -1,6 +1,22 @@
+import logging
+from typing import Dict
+
 from kedro.framework.hooks import hook_impl
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
+
+logger = logging.getLogger(__name__)
+PARTITION_SCHEME: Dict = {}
+
+
+class ContextHooks:
+    @hook_impl
+    def after_context_created(self, context) -> None:
+        """Update global variables from params to be accessible outside nodes."""
+        logger.info(f"params read by context hook: {context.params}")
+
+        global PARTITION_SCHEME
+        PARTITION_SCHEME = context.params["partitions"]
 
 
 class SparkHooks:
@@ -9,7 +25,6 @@ class SparkHooks:
         """Initialises a SparkSession using the config
         defined in project's conf folder.
         """
-
         # Load the spark configuration in spark.yaml using the config loader
         parameters = context.config_loader.get("spark*", "spark*/**")
         spark_conf = SparkConf().setAll(parameters.items())

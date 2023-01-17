@@ -1,18 +1,14 @@
-"""
-This is a boilerplate pipeline
-generated using Kedro 0.18.4
-"""
-
 import logging
 from typing import Dict
 
 from pyspark.sql import DataFrame
 
+from . import hooks
 from .config_loader import parameters
-from .hooks import test_hook_var
 from .utils import repartition_by
 
 logger = logging.getLogger(__name__)
+logger.info(f"check hooked var: {hooks.PARTITION_SCHEME}")  # not updated yet
 _partition_cols = parameters["partitions"]["parsed"]
 
 
@@ -28,13 +24,11 @@ def read_raw_data(data: DataFrame, parameters: Dict) -> DataFrame:
         A pyspark dataframe.
 
     """
-    logger.info(f"parameters read as: {parameters}")
-    logger.info(f"globals in hook: {test_hook_var}")
     return data
 
 
 def dummy(data: DataFrame, parameters: Dict) -> DataFrame:
     logger.info("running a dummy node")
-    logger.info(f"parameters read as: {parameters}")
-    logger.info(f"globals in hook: {test_hook_var}")
+    logger.info(f"parameters read in a node as: {parameters}")
+    logger.info(f"globals in a node updated by hook: {hooks.PARTITION_SCHEME}")  # now updated
     return data

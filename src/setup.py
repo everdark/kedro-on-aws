@@ -18,7 +18,9 @@ setup(
     name="iris",
     version="0.1",
     packages=find_packages(exclude=["tests"]),
-    entry_points={"console_scripts": [entry_point]},
+    entry_points={
+        "console_scripts": [entry_point],
+    },
     install_requires=requires,
     extras_require={
         "docs": [

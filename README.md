@@ -8,6 +8,15 @@ In case the raw data is challenging to parse (e.g., unfriendly partitioned),
 we can introduce an Athena query layer to serve as the actual entrypoint to the raw data.
 We can use CTAS or UNLOAD queries to make sure the resulting files are properly partitioned for the downstream pipeline.
 
+- Read parameters outside node functions
+
+Parameters in general cannot be accessed outside the node function.
+It is possible to use hooks to populate it to Python globals and access it within, say, a pipeline function.
+But as a general constants across the module this update is not timely.
+A `config_loader.py` module is introduced to workaround this issue.
+
+The use case is for a decorator to depends on parameters as its argument to decorate node functions.
+
 - PySpark DataFrame partitioning with `globals` configuration and repartition decorator
 
 All resulting datasets are pyspark dataframe.
@@ -17,9 +26,10 @@ with the help of yaml templating to configure the built-in kedro `SparkDataSet`.
 
 We also use a repartition decorator to control how data are distributed across partitions.
 
-- Hooking `globals`
+- Dymanic `globals` in `settings.py`
 
 Change `globals` programmatically to achieve dynamic `filepath` in dataset I/O.
+This is still quite restricted since `settings.py` cannot be hooked.
 
 ## Data
 
