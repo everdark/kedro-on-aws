@@ -4,4 +4,9 @@ partitions:
 train_fraction: 0.8
 random_state: 3
 target_column: species
-test: default  # will be populated to a python global var
+test: default
+
+# NOTE: parameter overwrites only at shallow level
+nested:
+  k1: base
+  k2: base
