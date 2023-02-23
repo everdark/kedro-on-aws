@@ -38,4 +38,5 @@ dummy:
 
 dummy_out:
   type: pandas.CSVDataSet
-  filepath: data/iris-out.csv
+  filepath: data/02_intermediate/out
+  versioned: true
