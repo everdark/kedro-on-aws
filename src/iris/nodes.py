@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Dict
 
 import pandas as pd
 from pyspark.sql import DataFrame
@@ -39,11 +39,12 @@ def dummy(data: DataFrame, parameters: Dict) -> DataFrame:
     data["ts"] = pd.Timestamp.now()
     return data
 
+
 def print_dummy(data: DataFrame) -> None:
     print(data.head())
 
 
 def train_model(df: pd.DataFrame) -> BaseEstimator:
     model = LogisticRegression(C=1.23456, max_iter=987, random_state=42)
-    model.fit(df.iloc[:,:4], df["species"])
+    model.fit(df.iloc[:, :4], df["species"])
     return model

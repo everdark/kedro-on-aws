@@ -5,8 +5,9 @@ generated using Kedro 0.18.4
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import dummy, print_dummy, read_raw_data, train_model
 from iris.sagemaker import package_model_artifacts
+
+from .nodes import dummy, print_dummy, read_raw_data, train_model
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -55,7 +56,7 @@ def create_dummy_pipeline(**kwargs) -> Pipeline:
                     "image_uri": "params:sagemaker.image_uri",
                 },
                 outputs=None,
-                name="register_model"
-            )
+                name="register_model",
+            ),
         ]
     )
