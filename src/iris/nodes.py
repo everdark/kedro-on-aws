@@ -1,7 +1,10 @@
 import logging
-from typing import Dict
+from typing import Any, Dict
 
+import pandas as pd
 from pyspark.sql import DataFrame
+from sklearn.base import BaseEstimator
+from sklearn.linear_model import LogisticRegression
 
 from . import hooks
 from .config_loader import parameters
@@ -33,4 +36,14 @@ def dummy(data: DataFrame, parameters: Dict) -> DataFrame:
     logger.info(
         f"[node] globals updated by hook: {hooks.PARTITION_SCHEME}"
     )  # now updated
+    data["ts"] = pd.Timestamp.now()
     return data
+
+def print_dummy(data: DataFrame) -> None:
+    print(data.head())
+
+
+def train_model(df: pd.DataFrame) -> BaseEstimator:
+    model = LogisticRegression(C=1.23456, max_iter=987, random_state=42)
+    model.fit(df.iloc[:,:4], df["species"])
+    return model

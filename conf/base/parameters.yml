@@ -10,3 +10,11 @@ test: default
 nested:
   k1: base
   k2: base
+
+sagemaker:
+  model_desc: test
+  model_url: s3://k9-kedro-on-aws/sagemaker/models/
+  model_group_name: test
+  model_group_desc: test
+  # image_uri: public.ecr.aws/d1q3k7p9/sagemaker-sample:latest  # public ecr not supported?
+  image_uri: 069566694064.dkr.ecr.ap-southeast-1.amazonaws.com/test-sagemaker

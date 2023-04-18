@@ -1,6 +1,7 @@
 __pycache__
 conf/local
 logs/*
+data/*
 !logs/placeholder
 .ipynb_checkpoints
 .terraform*

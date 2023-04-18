@@ -40,3 +40,18 @@ dummy_out:
   type: pandas.CSVDataSet
   filepath: data/02_intermediate/out
   versioned: true
+
+model:
+  type: pickle.PickleDataSet
+  backend: pickle  # or joblib
+  filepath: data/06_models/model
+  versioned: True
+
+# transcode the versioned model artifacts into partitioned dataset
+# in order to access different versions at once
+models:
+  type: PartitionedDataSet
+  path: data/06_models/model
+  dataset:
+    type: pickle.PickleDataSet
+    backend: pickle
