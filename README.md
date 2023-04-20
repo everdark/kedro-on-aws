@@ -1,6 +1,6 @@
 # kedro-on-aws
 
-The repository is a playground for experients about using [Kedro](https://github.com/kedro-org/kedro) on AWS.
+The repository is a playground for experiments about using [Kedro](https://github.com/kedro-org/kedro) on AWS.
 
 - [Pipelines](#pipelines)
 - [Experiments](#experiments)
