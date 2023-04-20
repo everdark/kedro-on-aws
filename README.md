@@ -16,8 +16,8 @@ The repository is a playground for experiments about using [Kedro](https://githu
 
 ## Pipelines
 
-- `kedro run -p train_and_register_model`: Train a `scikit-learn` model based on the `iris` dataset and save it to SageMaker Model Registry along with an inference module
-- `kedro run -p deploy_model`: Deploy a SageMaker model package prepared by the pipeline `train_and_register_model`
+- `train_and_register_model`: Train a `scikit-learn` model based on the `iris` dataset and save it to SageMaker Model Registry along with an inference module
+- `deploy_model`: Deploy a SageMaker model package prepared by the pipeline `train_and_register_model`
 -
 
 ## Experiments
@@ -25,7 +25,7 @@ The repository is a playground for experiments about using [Kedro](https://githu
 ### Integration with SageMaker Model Registry and Batch Transform Job
 
 Train a `scikit-learn` model (outside SageMaker) and save it as a versioned Kedro catalog.
-Use catalog transcoding to obtain the model version string and re-package it as `.tar.gz` and upload to S3 as model artifacts.
+Use catalog transcoding to obtain the model version string and re-package, upload to S3 as model artifacts.
 Then create a SageMaker model package based on the artifacts.
 The image used for the model package is a pre-built SageMaker image for `scikit-learn`.
 To pull that image:
@@ -67,6 +67,9 @@ aws sagemaker list-model-packages --model-package-group-name ${MODEL_GROUP} \
 ```
 
 Once approved, a model package can be used to create a model ready for serving real-time or batch transform jobs.
+
+To make sure model versioning from Kedro and SageMaker can be linked together,
+we use versioned `JSONDataSet` to store ARN of the resulting AWS resources.
 
 ### Using a custom kedro dataset with Athena query
 
