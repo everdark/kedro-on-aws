@@ -1,12 +1,9 @@
 """Custom inference module for SageMaker model serving purpose.
 This module should be put as inference.py along with anyother model artifacts packaged
 together as a .tar.gz on S3.
-
-Reference:
-https://docs.aws.amazon.com/sagemaker/latest/dg/adapt-inference-container.html
 """
 import os
-from io import BytesIO
+from io import BytesIO, StringIO
 from typing import BinaryIO
 
 import joblib
@@ -25,7 +22,12 @@ def model_fn(model_dir: str) -> BaseEstimator:
         A pre-trained model object.
 
     """
-    model = joblib.load(os.path.join(model_dir, "model.joblib"))
+    # we dont read model from model_dir since it is the output dir for a training job
+    # we alrady provide our model in package and the default untar location is
+    # /opt/ml/code
+    print("list /opt/ml/code:")
+    print(os.listdir("/opt/ml/code"))
+    model = joblib.load(os.path.join("/opt/ml/code", "model"))
     return model
 
 
@@ -40,12 +42,19 @@ def input_fn(
     input_data: StreamingBody, content_type: str = "application/x-parquet"
 ) -> pd.DataFrame:
     """Input function for processing incoming data before model prediction."""
+    label_name = "species"
     if content_type == "application/x-parquet":
         data = BytesIO(input_data)
         df = pd.read_parquet(data)
-        return df
+    elif content_type == "text/csv":
+        df = pd.read_csv(StringIO(input_data))
     else:
-        raise ValueError("Expected `application/x-parquet`.")
+        raise ValueError("Expected `application/x-parquet` or `text/csv`.")
+
+    if label_name in df.columns:
+        df = df.drop(columns=[label_name])
+
+    return df
 
 
 def output_fn(output: pd.DataFrame, accept: str = "application/x-parquet") -> BinaryIO:
