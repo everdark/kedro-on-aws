@@ -5,6 +5,9 @@ The repository is a playground for experiments about using [Kedro](https://githu
 - [Pipelines](#pipelines)
 - [Experiments](#experiments)
   - [Integration with SageMaker Model Registry and Batch Transform Job](#integration-with-sagemaker-model-registry-and-batch-transform-job)
+    - [Runtime Image](#runtime-image)
+    - [Approve Model Packages](#approve-model-packages)
+    - [Inference Module](#inference-module)
   - [Using a custom kedro dataset with Athena query](#using-a-custom-kedro-dataset-with-athena-query)
   - [Read parameters outside node functions](#read-parameters-outside-node-functions)
   - [PySpark DataFrame partitioning with `globals` configuration and repartition decorator](#pyspark-dataframe-partitioning-with-globals-configuration-and-repartition-decorator)
@@ -27,6 +30,9 @@ The repository is a playground for experiments about using [Kedro](https://githu
 Train a `scikit-learn` model (outside SageMaker) and save it as a versioned Kedro catalog.
 Use catalog transcoding to obtain the model version string and re-package, upload to S3 as model artifacts.
 Then create a SageMaker model package based on the artifacts.
+
+#### Runtime Image
+
 The image used for the model package is a pre-built SageMaker image for `scikit-learn`.
 To pull that image:
 
@@ -39,6 +45,8 @@ TAG=1.2-1
 aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
 docker pull ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${NAME}:${TAG}
 ```
+
+#### Approve Model Packages
 
 To approve a model package using `aws-cli`:
 
@@ -70,6 +78,11 @@ Once approved, a model package can be used to create a model ready for serving r
 
 To make sure model versioning from Kedro and SageMaker can be linked together,
 we use versioned `JSONDataSet` to store ARN of the resulting AWS resources.
+
+#### Inference Module
+
+Refer to `./src/iris/inference.py` for details.
+The module has been customized to allow input data in parquet format and also output prediction result in parquet.
 
 ### Using a custom kedro dataset with Athena query
 
