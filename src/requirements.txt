@@ -2,18 +2,20 @@ black~=22.0
 flake8>=3.7.9, <4.0
 ipython>=7.31.1, <8.0
 isort~=5.0
+bandit~=1.7
+pytest-cov~=3.0
+pytest~=6.2
+
 jupyter~=1.0
 jupyterlab~=3.0
+
 kedro~=0.18.4
 kedro-datasets[spark.SparkDataSet, pandas.ParquetDataSet]~=1.0.0
-kedro-telemetry~=0.2.0
-kedro-viz~=5.1
-nbstripout~=0.4
-numpy~=1.21
-pytest-cov~=3.0
-pytest-mock>=1.7.1, <2.0
-pytest~=6.2
-boto3~=1.24
+kedro-viz~=6.0
+
+pandas~=1.5
 pyspark~=3.3
-bandit~=1.7
-scikit-learn~=1.2
+scikit-learn==1.2.1  # fix for sagemaker
+
+boto3~=1.24
+sagemaker~=2.146

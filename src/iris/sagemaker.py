@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import shutil
@@ -8,11 +9,13 @@ from typing import Callable, Dict, Optional
 import boto3
 import joblib
 import sagemaker
+from botocore.exceptions import ClientError
 from sklearn.base import BaseEstimator
 
-_AWS_REGION = "ap-southeast-1"
-_MODEL_FILE_NAME = "model"
+_MODEL_FILE_NAME = "model.joblib"
 _INSTANCE_TYPE = "ml.m5.large"
+_PATH_TO_INFERENCE_MODULE = "src/iris/inference.py"
+logger = logging.getLogger(__name__)
 
 
 def create_model_group_if_not_exist(name: str, desc: str = "") -> Dict:
@@ -31,14 +34,18 @@ def create_model_group_if_not_exist(name: str, desc: str = "") -> Dict:
         "ModelPackageGroupDescription": desc,
     }
     sess = boto3.Session()
-    client = sess.client("sagemaker", region_name=_AWS_REGION)
+    client = sess.client("sagemaker")
     response = client.list_model_package_groups()
     _list = response.get("ModelPackageGroupSummaryList", [])
     model_groups = [g.get("ModelPackageGroupName") for g in _list]
 
     out = {}
+    logger.info(f"creating model package group '{name}'...")
     if name not in model_groups:
         out = client.create_model_package_group(**args)
+        logger.info(f"model package group '{name}' created")
+    else:
+        logger.info(f"model package group '{name}' already exists")
 
     return out
 
@@ -66,7 +73,9 @@ def create_model_package(
                     "ModelDataUrl": model_url,
                 }
             ],
+            # we need a custom input_fn to read from parquet
             "SupportedContentTypes": ["application/x-parquet", "text/csv"],
+            # we need a custom output_fn to convert output to parquet
             "SupportedResponseMIMETypes": ["application/x-parquet"],
         },
         "ModelPackageGroupName": model_group,
@@ -74,9 +83,11 @@ def create_model_package(
         "ModelApprovalStatus": "PendingManualApproval",
     }
     sess = boto3.Session()
-    client = sess.client("sagemaker", region_name=_AWS_REGION)
+    client = sess.client("sagemaker")
     r = client.create_model_package(**args)
-    return r["ModelPackageArn"]
+    arn = r["ModelPackageArn"]
+    logger.info(f"model package registered: {arn}")
+    return arn
 
 
 def package_model_artifacts(
@@ -87,7 +98,7 @@ def package_model_artifacts(
     model_group_name: str,
     model_group_desc: str,
     image_uri: str,
-) -> str:
+) -> Dict[str, str]:
     """Package model artifacts in SageMaker Model Registry compatible format.
 
     This function is used as a Kedro node function.
@@ -104,7 +115,7 @@ def package_model_artifacts(
         image_uri: ECR path to a runtime image used by the model.
 
     Returns:
-        ARN of the resulting model package.
+        A dict storing model package ARN.
 
     """
     # NOTE: the latest model should be the same as the model from the first argument,
@@ -120,7 +131,7 @@ def package_model_artifacts(
     model_dir = tempfile.TemporaryDirectory()
     joblib.dump(model, f"{model_dir.name}/{_MODEL_FILE_NAME}")
     # also include the inference module
-    shutil.copyfile("src/iris/inference.py", f"{model_dir.name}/inference.py")
+    shutil.copyfile(_PATH_TO_INFERENCE_MODULE, f"{model_dir.name}/inference.py")
 
     # package all model artifacts into a .tar.gz under system temp dir
     artifact_name = "model.tar.gz"
@@ -134,12 +145,16 @@ def package_model_artifacts(
 
     # upload model artifacts to s3
     sess = boto3.Session()
-    s3_client = sess.client("s3", region_name=_AWS_REGION)
+    s3_client = sess.client("s3")
     model_s3_path = re.sub("^s3://", "", model_url).split("/")
     bucket = model_s3_path[0]
     prefix = "/".join(model_s3_path[1:])
     key = os.path.join(prefix, f"{ver}-{artifact_name}")
-    _ = s3_client.upload_file(model_tar_gz, bucket, key)
+    try:
+        s3_client.upload_file(model_tar_gz, bucket, key)
+        logger.info(f"model artifacts uploaded to: {bucket}/{key}")
+    except ClientError as e:
+        logging.error(e)
 
     # register the model package
     _ = create_model_group_if_not_exist(model_group_name, model_group_desc)
@@ -147,11 +162,12 @@ def package_model_artifacts(
     model_arn = create_model_package(
         model_desc, model_group_name, final_model_url, image_uri
     )
+    out = {"model_package_arn": model_arn}
 
-    return model_arn
+    return out
 
 
-def create_model(name: str, arn: str, iam: Optional[str] = None) -> str:
+def _create_model(name: str, arn: str, iam: Optional[str] = None) -> str:
     """Create a SageMaker model that can be used for either real-time serving or
     batch transform job.
 
@@ -178,15 +194,34 @@ def create_model(name: str, arn: str, iam: Optional[str] = None) -> str:
                 "ModelPackageName": arn,
                 "Environment": {
                     "SAGEMAKER_PROGRAM": "inference.py",
-                    "SAGEMAKER_SUBMIT_DIRECTORY": "/opt/ml/model",
                 },
             }
         ],
     }
     sess = boto3.Session()
-    client = sess.client("sagemaker", region_name=_AWS_REGION)
+    client = sess.client("sagemaker")
     r = client.create_model(**args)
     return r["ModelArn"]
+
+
+def create_model(model_package_arn: Dict[str, str], model_name: str) -> Dict[str, str]:
+    """Kedro node function to deploy a SageMaker model.
+
+    Args:
+        model_package_arn: A dict with key "model_package_arn" to a model pacakge ARN.
+        model_name: Model name (as prefix only).
+
+    Returns:
+        A dict storing ARN of the resulting model.
+
+    """
+    package_arn = model_package_arn["model_package_arn"]
+    # take package name and version number as suffix for model name
+    suffix = "-".join(package_arn.split("/")[-2:])
+    name = f"{model_name}-{suffix}"
+    model_arn = _create_model(name, package_arn)
+    out = {"model_arn": model_arn}
+    return out
 
 
 def create_batch_transform_job(
@@ -236,6 +271,6 @@ def create_batch_transform_job(
         },
     }
     sess = boto3.Session()
-    client = sess.client("sagemaker", region_name=_AWS_REGION)
+    client = sess.client("sagemaker")
     r = client.create_transform_job(**args)
     return r

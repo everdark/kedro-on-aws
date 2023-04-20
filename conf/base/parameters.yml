@@ -16,4 +16,5 @@ sagemaker:
   model_url: s3://k9-kedro-on-aws/sagemaker/models/
   model_group_name: test
   model_group_desc: test
+  model_name_base: iris-model
   image_uri: 069566694064.dkr.ecr.ap-southeast-1.amazonaws.com/sagemaker-scikit-learn:1.2-1

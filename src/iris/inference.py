@@ -27,7 +27,7 @@ def model_fn(model_dir: str) -> BaseEstimator:
     # /opt/ml/code
     print("list /opt/ml/code:")
     print(os.listdir("/opt/ml/code"))
-    model = joblib.load(os.path.join("/opt/ml/code", "model"))
+    model = joblib.load(os.path.join("/opt/ml/code", "model.joblib"))
     return model
 
 

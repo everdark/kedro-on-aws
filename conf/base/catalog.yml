@@ -32,6 +32,10 @@ parsed:
     <<: *parquet_save_args
     partitionBy: ${partitions.parsed}
 
+iris:
+  type: pandas.CSVDataSet
+  filepath: data/iris.csv
+
 dummy:
   type: pandas.CSVDataSet
   filepath: data/iris.csv
@@ -55,3 +59,13 @@ models:
   dataset:
     type: pickle.PickleDataSet
     backend: pickle
+
+model_package_arn:
+  type: json.JSONDataSet
+  filepath: data/06_models/model_package_arn.json
+  versioned: True
+
+model_arn:
+  type: json.JSONDataSet
+  filepath: data/06_models/model_arn.json
+  versioned: True

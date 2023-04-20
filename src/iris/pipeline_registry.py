@@ -3,7 +3,12 @@ from typing import Dict
 
 from kedro.pipeline import Pipeline
 
-from iris.pipeline import create_dummy_pipeline, create_pipeline
+from iris.pipeline import (
+    create_dummy_pipeline,
+    create_pipeline,
+    pipeline_create_model,
+    pipeline_train_and_register_model,
+)
 
 
 def register_pipelines() -> Dict[str, Pipeline]:
@@ -11,9 +16,12 @@ def register_pipelines() -> Dict[str, Pipeline]:
 
     Returns:
         A mapping from pipeline names to ``Pipeline`` objects.
+
     """
     pipelines = {
         "__default__": create_dummy_pipeline(),
+        "train_and_register_model": pipeline_train_and_register_model,
+        "deploy_model": pipeline_create_model,
         "aws": create_pipeline(),
     }
     return pipelines
