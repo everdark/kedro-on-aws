@@ -5,7 +5,7 @@ from kedro.pipeline import Pipeline
 
 from iris.pipeline import (
     create_dummy_pipeline,
-    create_pipeline,
+    pipeline_athena,
     pipeline_create_model,
     pipeline_train_and_register_model,
 )
@@ -22,6 +22,6 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "__default__": create_dummy_pipeline(),
         "train_and_register_model": pipeline_train_and_register_model,
         "deploy_model": pipeline_create_model,
-        "aws": create_pipeline(),
+        "athena": pipeline_athena,
     }
     return pipelines

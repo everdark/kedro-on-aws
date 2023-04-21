@@ -25,9 +25,9 @@ transactions:
     LIMIT 5000
   partition_cols: [year, month]
 
-parsed:
+parsed_transactions:
   <<: *parquet
-  filepath: s3a://${bucket_name}/${nightly_prefix}/parsed/
+  filepath: s3a://${bucket_name}/${nightly_prefix}/parsed_transactions/
   save_args:
     <<: *parquet_save_args
     partitionBy: ${partitions.parsed}

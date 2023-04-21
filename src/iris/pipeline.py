@@ -45,19 +45,16 @@ pipeline_create_model = pipeline(
         node_create_model,
     ]
 )
-
-
-def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline(
-        [
-            node(
-                func=N.read_raw_data,
-                inputs=["transactions", "parameters"],
-                outputs="parsed",
-                name="parse_transactions",
-            ),
-        ]
-    )
+pipeline_athena = pipeline(
+    [
+        node(
+            func=N.read_raw_data,
+            inputs=["transactions", "parameters"],
+            outputs="parsed_transactions",
+            name="parse_transactions",
+        ),
+    ]
+)
 
 
 def create_dummy_pipeline(**kwargs) -> Pipeline:
