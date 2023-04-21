@@ -2,14 +2,26 @@
 
 The repository is a playground for experiments about using [Kedro](https://github.com/kedro-org/kedro) on AWS.
 
+The project is bootstrapepd from the `pyspark-iris` starter template:
+
+```bash
+kedro new --starter=pyspark-iris
+```
+
+To install the dependencies:
+
+```bash
+pip install -r src/requirements.txt
+```
+
 - [Pipelines](#pipelines)
 - [Experiments](#experiments)
   - [E01. Integration with SageMaker Model Registry and Batch Transform Job](#e01-integration-with-sagemaker-model-registry-and-batch-transform-job)
   - [E02. Custom Kedro Dataset based on Athena Query](#e02-custom-kedro-dataset-based-on-athena-query)
+  - [E03. Read Dataset from S3 with PySpark](#e03-read-dataset-from-s3-with-pyspark)
   - [Read parameters outside node functions](#read-parameters-outside-node-functions)
   - [PySpark DataFrame partitioning with `globals` configuration and repartition decorator](#pyspark-dataframe-partitioning-with-globals-configuration-and-repartition-decorator)
   - [Dymanic `globals` in `settings.py`](#dymanic-globals-in-settingspy)
-- [Prep](#prep)
 
 ## Pipelines
 
@@ -22,6 +34,8 @@ The repository is a playground for experiments about using [Kedro](https://githu
 ### [E01. Integration with SageMaker Model Registry and Batch Transform Job](./docs/integration_with_sagemaker.md)
 
 ### [E02. Custom Kedro Dataset based on Athena Query](./docs/custom_dataset_athena_query.md)
+
+### [E03. Read Dataset from S3 with PySpark](./docs/pyspark_read_from_s3.md)
 
 ### Read parameters outside node functions
 
@@ -45,20 +59,3 @@ We also use a repartition decorator to control how data are distributed across p
 
 Change `globals` programmatically to achieve dynamic `filepath` in dataset I/O.
 This is still quite restricted since `settings.py` cannot be hooked.
-
-## Prep
-
-```bash
-pip install -r src/requirements.txt
-```
-
-To allow `pyspark` to read files from `s3`, we will need two jars:
-
-- [hadoop-aws](https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-aws)
-- [aws-java-sdk-bundle](https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bundle)
-
-The kedro template used in this repo is simply created by:
-
-```bash
-kedro new --starter=pyspark-iris
-```

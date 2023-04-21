@@ -27,7 +27,7 @@ transactions:
 
 parsed_transactions:
   <<: *parquet
-  filepath: s3a://${bucket_name}/${nightly_prefix}/parsed_transactions/
+  filepath: s3a://${bucket_name}/${nightly_prefix}/parsed/
   save_args:
     <<: *parquet_save_args
     partitionBy: ${partitions.parsed}
