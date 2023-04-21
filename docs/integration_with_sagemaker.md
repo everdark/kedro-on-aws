@@ -58,7 +58,7 @@ we use versioned `JSONDataSet` to store ARN of the resulting AWS resources.
 
 ## Inference Module
 
-Refer to [`./src/iris/inference.py`](./src/iris/inference.py) for details.
+Refer to [`../src/iris/inference.py`](./src/iris/inference.py) for details.
 The module has been customized to allow input data in parquet format and also output prediction result in parquet.
 
 This is refered to as a user module in the [`multi-model-server`](https://github.com/awslabs/multi-model-server) framework which is used by SageMaker training/inference image.
