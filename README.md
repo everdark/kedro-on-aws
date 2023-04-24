@@ -19,9 +19,9 @@ pip install -r src/requirements.txt
   - [E01. Integration with SageMaker Model Registry and Batch Transform Job](#e01-integration-with-sagemaker-model-registry-and-batch-transform-job)
   - [E02. Custom Kedro Dataset based on Athena Query](#e02-custom-kedro-dataset-based-on-athena-query)
   - [E03. Read Dataset from S3 with PySpark](#e03-read-dataset-from-s3-with-pyspark)
-  - [Read parameters outside node functions](#read-parameters-outside-node-functions)
-  - [PySpark DataFrame partitioning with `globals` configuration and repartition decorator](#pyspark-dataframe-partitioning-with-globals-configuration-and-repartition-decorator)
-  - [Dymanic `globals` in `settings.py`](#dymanic-globals-in-settingspy)
+  - [E04. Partition PySpark DataFrame with `globals` and repartition decorator](#e04-partition-pyspark-dataframe-with-globals-and-repartition-decorator)
+  - [Miscellaneous](#miscellaneous)
+    - [Dymanic `globals` via `settings.py`](#dymanic-globals-via-settingspy)
 
 ## Pipelines
 
@@ -37,25 +37,11 @@ pip install -r src/requirements.txt
 
 ### [E03. Read Dataset from S3 with PySpark](./docs/pyspark_read_from_s3.md)
 
-### Read parameters outside node functions
+### [E04. Partition PySpark DataFrame with `globals` and repartition decorator](./docs/partition_pyspark_dataframe.md)
 
-Parameters in general cannot be accessed outside the node function.
-It is possible to use hooks to populate it to Python globals and access it within, say, a pipeline function.
-But as a general constants across the module this update is not timely.
-A `config_loader.py` module is introduced to workaround this issue.
+### Miscellaneous
 
-The use case is for a decorator to depends on parameters as its argument to decorate node functions.
-
-### PySpark DataFrame partitioning with `globals` configuration and repartition decorator
-
-All resulting datasets are pyspark dataframe.
-We'd like to persist them as partitioned parquet files on S3.
-We use `globals` as the single source of truth for partitioning scheme,
-with the help of yaml templating to configure the built-in kedro `SparkDataSet`.
-
-We also use a repartition decorator to control how data are distributed across partitions.
-
-### Dymanic `globals` in `settings.py`
+#### Dymanic `globals` via `settings.py`
 
 Change `globals` programmatically to achieve dynamic `filepath` in dataset I/O.
-This is still quite restricted since `settings.py` cannot be hooked.
+Note that this is still quite restricted since `settings.py` cannot be hooked.
