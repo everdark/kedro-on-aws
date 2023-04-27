@@ -1,3 +1,4 @@
+# use your own backend if you want to deploy the resources to your account
 terraform {
   backend "s3" {
     region         = "ap-southeast-1"
