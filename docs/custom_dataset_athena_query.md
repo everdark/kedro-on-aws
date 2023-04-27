@@ -1,7 +1,6 @@
 # E02. Custom Kedro Dataset based on Athena Query
 
 Implement a custom dataset [AthenaQueryDataSet](../src/iris/extras/datasets/athena_dataset.py) to handle data source based on Athena query.
-
 This is useful when the source data files are not user-friendly for loading.
 For example, when the source data files are not properly partitioned.
 
@@ -9,7 +8,7 @@ We can use either CTAS or UNLOAD queries to make sure the resulting files are pr
 
 ## Prerequisites
 
-We use [Terraform](https://www.terraform.io/) to manage the required AWS resources for this experiments.
+We use [Terraform](https://www.terraform.io/) to manage the required AWS resources for this experiment.
 
 ### Data
 
