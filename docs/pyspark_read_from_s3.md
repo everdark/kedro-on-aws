@@ -14,6 +14,12 @@ the folder should be something like
 <your-python-lib-path>/site-packages/pyspark/jars
 ```
 
+Also add the following arg to the `spark.yml` (or your spark submit job argument):
+
+```yml
+spark.hadoop.fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
+```
+
 To test the catalog:
 
 ```python
