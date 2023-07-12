@@ -6,4 +6,4 @@ lint:
 	@black $(FILE_PATH)
 	@isort --profile black $(FILE_PATH)
 	@flake8 --max-line-length 88 --extend-ignore=E203 $(FILE_PATH)
-	@bandit --exclude $(TEST_PATH) $(FILE_PATH) # FIXME: the working ec2 instance does not have bandit installed
+	@bandit --exclude $(TEST_PATH) $(FILE_PATH)
